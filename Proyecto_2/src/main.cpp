@@ -11,9 +11,11 @@
 //-----------------------------------------------------------------------------
 //Definiciond de etiquetas
 //-----------------------------------------------------------------------------
-//variables para modulo de peso 
+//variables para modulo de peso
 
-//https://naylampmechatronics.com/blog/25_tutorial-trasmisor-de-celda-de-carga-hx711-balanza-digital.html
+//https://naylampmechatronics.com/blog/25_tutorial-trasmisor-de-celda-de-carga-hx711-scale-digital.html
+// hacerlo fisico
+//https://www.taloselectronics.com/blogs/tutoriales/celda-de-carga-hx711
 
 
 //-----------------------------------------------------------------------------
@@ -24,9 +26,10 @@
 //-----------------------------------------------------------------------------
 //Variabls Globales
 //-----------------------------------------------------------------------------
-// para sensor de peso 
-const int LOADCELL_DOUT_PIN = 25; // cambiar pines !!! 
-const int LOADCELL_SCK_PIN = 26;
+// para sensor de peso
+const int LOADCELL_DOUT_PIN = 23; // cambiar pines !!!
+const int LOADCELL_SCK_PIN = 22;
+HX711 scale;
 
 //-----------------------------------------------------------------------------
 //ISR
@@ -37,10 +40,20 @@ const int LOADCELL_SCK_PIN = 26;
 //-----------------------------------------------------------------------------
 void setup()
 {
-// para modulo de peso 
-  Serial.begin(57600);
+  // para modulo de peso
+  Serial.begin(115200);
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
 
+
+  Serial.print("Lectura del valor del ADC:  ");
+  Serial.println(scale.read());
+  Serial.println("No ponga ningun  objeto sobre la balanza");
+  Serial.println("Destarando...");
+  Serial.println("...");
+  scale.set_scale(439430.25); // Establecemos la escala
+  scale.tare(20);  //El peso actual es considerado Tara.
+
+  Serial.println("Listo para pesar");
 
 }
 
@@ -49,19 +62,11 @@ void setup()
 //-----------------------------------------------------------------------------
 void loop()
 {
-  //configuracion para sensor 
-  if (scale.is_ready()) {
-    long reading = scale.read();
-    Serial.print("HX711 reading: ");
-    Serial.println(reading);
-  } else {
-    Serial.println("HX711 not found.");
-  }
-
-  delay(1000);
-
+  Serial.print("Peso: ");
+  Serial.print(scale.get_units(20), 3);
+  Serial.println(" kg");
+  delay(500);
 }
 //-----------------------------------------------------------------------------
-//configuracion 
+//configuracion
 //-----------------------------------------------------------------------------
-
